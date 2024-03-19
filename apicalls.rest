@@ -1,0 +1,28 @@
+### Get all 
+GET http://localhost:8081/api/cars
+
+
+### Get single 
+GET http://localhost:8080/api/cars/3
+
+
+### Create new car
+POST http://localhost:8081/api/carsadd
+Content-Type: application/json
+
+{
+    "Name":"Mclarnes",
+    "Model":"2024",
+    "Color":"blackOut"
+}
+
+### Update new car
+PUT http://localhost:8081/api/cars/1/update
+Content-Type: application/json
+
+{
+  
+    "Name":"loveloveSandra",
+    "Model":"2025",
+    "Color":"blackOut"
+}
