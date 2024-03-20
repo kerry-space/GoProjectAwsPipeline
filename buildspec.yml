@@ -19,6 +19,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - docker build -t git.systementor.se/yacloud/GoProjectAwsPipeline .
+      - go test
+      - docker build -t git.systementor.se/yacloud/go-project-aws-pipeline .
       - docker login -u kerry.jalal -p yacloud1 https://git.systementor.se
-      - docker push git.systementor.se/yacloud/GoProjectAwsPipeline
+      - docker push git.systementor.se/yacloud/go-project-aws-pipeline
