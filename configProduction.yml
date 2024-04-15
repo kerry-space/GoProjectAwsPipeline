@@ -4,9 +4,9 @@ database:
   file: "" 
   # eller alla dessa (om file är blankt)
   sql-user: "root"            #
-  sql-pass: "my-secret-pw"
-  sql-server: "127.0.0.1"
-  sql-database: "Salary"
+  sql-pass: "hejsan123"
+  sql-server: "mysql"
+  sql-database: "cars"
   sql-port: 3307
 
 redis:
