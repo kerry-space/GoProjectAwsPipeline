@@ -1,34 +1,33 @@
-# Start with a base image that includes the Go toolchain.
-# Specifying 'alpine' as a variant for a smaller image size.
-FROM golang:1.18-alpine as builder
+# Use an official Golang runtime as a parent image
+FROM golang:alpine AS builder
 
-# Install necessary packages like 'git'.
-# 'ca-certificates' is often required by applications.
-RUN apk update && apk add --no-cache git ca-certificates
+# Install git, required for fetching Go dependencies.
+RUN apk update && apk add --no-cache git
 
-# Set the working directory inside the container.
-WORKDIR /app
+# Set the Current Working Directory inside the container
+WORKDIR $GOPATH/src/mypackage/myapp/
 
-# Copy the local package files to the container's workspace.
+# Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Download all the dependencies that are specified in the go.mod file.
-# Using 'go mod tidy' to add missing and remove unused modules.
-RUN go mod tidy
+# Fetch dependencies. Using go get.
+RUN go get -d -v
 
-# Build the Go app for the target platform specified by the GOARCH environment variable.
-# This line assumes you have a main package in the root of your project directory.
-# Adjust the path to where your main package's main.go is located if necessary.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH:-amd64} go build -o cmd/site
+# Build the Go app
+RUN go build -o /app/cmd/site
 
-# Use a minimal Alpine image for the production container.
-FROM alpine:latest
+# Start a new stage from scratch
+FROM scratch
 
-# Import the compiled binary from the previous stage.
-COPY --from=builder /app/cmd/site /app/cmd/site
+# Copy the Pre-built binary file from the previous stage
+COPY --from=builder /app/cmd/site /site
 
-# Set the port the container listens on.
+# Copy other necessary files like templates and configurations
+COPY templates/ /templates/
+COPY *.yml /
+
+# Expose port 8080 to the outside world
 EXPOSE 8080
 
-# Run the binary.
-ENTRYPOINT ["/app/cmd/site"]
+# Command to run the executable
+ENTRYPOINT ["/site"]

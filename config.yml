@@ -3,8 +3,8 @@ database:
   # antingen denna
   file: "databasen.sqlite" 
   # eller alla dessa (om file är blankt)
-  sql-user: "test"            #
-  sql-pass: "test"
+  sql-user: ""            #
+  sql-pass: ""
   sql-server: "127.0.0.1"
   sql-database: "SupportSystem"
   sql-port: 3306
