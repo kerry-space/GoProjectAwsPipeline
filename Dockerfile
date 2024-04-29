@@ -23,7 +23,6 @@ FROM scratch
 COPY --from=builder /app/cmd/site /site
 
 # Copy other necessary files like templates and configurations
-COPY templates/ /templates/
 COPY *.yml /
 
 # Expose port 8080 to the outside world

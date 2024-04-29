@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"main/data"
+	"main/rate"
 	"net/http"
 	"strconv"
 
@@ -13,14 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
-
-func createCar(id int, name string, model string, color string) data.Car {
-	car := data.Car{ID: id, Name: name, Model: model, Color: color}
-	return car
-
-}
-
-var carToAppend = []data.Car{}
 
 func apiCars(c *gin.Context) {
 	var cars []data.Car
@@ -107,9 +100,13 @@ func apiCarsDelete(c *gin.Context) {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		// Get the origin of the request
+		origin := c.Request.Header.Get("Origin")
+
+		// Set headers to allow the specific origin, replace with your client URL in production
+		c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
 		if c.Request.Method == "OPTIONS" {
@@ -204,6 +201,11 @@ func registerUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
+func onHealth(c *gin.Context) {
+	c.Status(200)
+	c.Writer.Write([]byte("ok"))
+}
+
 func main() {
 	var config Config
 	readConfig(&config)
@@ -216,19 +218,21 @@ func main() {
 
 	//create webpage with route
 	router := gin.Default()
+
+	// Initialize the rate limiter
+	limiter := rate.NewRateLimiter(1, 5)
 	router.Use(CORSMiddleware())
-	router.LoadHTMLGlob("templates/**")
 
 	// Initialize Redis store for session management
-	store, err := redis.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+	store, err := redis.NewStore(10, "tcp", config.Redis.Server, "", []byte("secret"))
 	if err != nil {
 		log.Fatal("failed to connect to Redis:", err)
 	}
 	router.Use(sessions.Sessions("mysession", store))
 
-	router.POST("/register", registerUser)
-	router.POST("/login", login)
-	router.GET("/logout", logout)
+	router.POST("/register", limiter.Middleware(), registerUser)
+	router.POST("/login", limiter.Middleware(), login)
+	router.GET("/logout", limiter.Middleware(), logout)
 
 	router.GET("/api/cars", apiCars)
 	router.GET("/api/cars/:id", apiCarsById)
@@ -237,6 +241,8 @@ func main() {
 	router.PUT("/api/cars/:id/update", apiCarsUpdate)
 
 	router.DELETE("/api/carsdelete/:id", apiCarsDelete)
+
+	router.GET("/healthz", onHealth)
 
 	router.Run(":8080")
 }

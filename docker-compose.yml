@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - my-app-network
+
+  go-api:
+    image: go-api:latest
+    container_name: go-api
+    ports:
+      - "8080:8080"
+    networks:
+      - my-app-network
+    depends_on:
+      - redis
+
+networks:
+  my-app-network:
+    driver: bridge

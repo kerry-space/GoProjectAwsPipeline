@@ -37,7 +37,7 @@ POST http://localhost:8080/register
 Content-Type: application/json
 
 {
-    "Username": "two",
+    "Username": "test",
     "Password": "love"
 }
 
@@ -47,8 +47,9 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-    "Username": "two",
-    "Password": "love"
+    "Username": "test",
+    "Password": "love",
+    "credentials": "include"
 }
 
 
