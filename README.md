@@ -28,15 +28,15 @@ To install and use this API, follow these steps:
 
 # Docker MySQL and Redis Setup
 
-1.  Pull MySQL Docker image:
+1. Pull MySQL Docker image
    ```sh
    docker pull mysql
-2. Run MySQL Docker container:
+2. Run MySQL Docker container
    ```sh
    docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql
-3. Pull Redis Docker image:
-  ```sh
-  docker pull redis
-3. Run Redis Docker container:
+3. Pull Redis Docker image
+   ```sh
+   docker pull redis
+3. Run Redis Docker container
    ```sh
    docker run --name redis-container -p 6379:6379 -d redis
