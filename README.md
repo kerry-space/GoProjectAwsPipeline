@@ -16,3 +16,27 @@ To install and use this API, follow these steps:
    Ensure you have MySQL and Redis installed and running on your system
    ```sh
    go run main.go
+
+# Docker Containerization
+
+1. Build Docker container
+   ```sh
+   docker build -t car-api.
+2. Run Docker container:
+   ```sh
+   docker run -p 8080:8080 -d car-api
+
+# Docker MySQL and Redis Setup
+
+1.  Pull MySQL Docker image:
+   ```sh
+   docker pull mysql
+2. Run MySQL Docker container:
+   ```sh
+   docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql
+3. Pull Redis Docker image:
+  ```sh
+  docker pull redis
+3. Run Redis Docker container:
+   ```sh
+   docker run --name redis-container -p 6379:6379 -d redis
